@@ -1,0 +1,24 @@
+🎵 TO ADD BIRTHDAY MUSIC:
+
+1. Download a Happy Birthday MP3 file
+   - Free options: pixabay.com/music or bensound.com
+   - Search for "happy birthday" or "celebration music"
+
+2. Rename the file to: birthday-music.mp3
+
+3. Place it in this folder (same location as this text file)
+
+4. That's it! The music button will work automatically
+
+---
+
+The website works perfectly without music too!
+The music button just won't play anything until you add the file.
+
+Quick Links for Free Music:
+- https://pixabay.com/music/search/birthday/
+- https://www.bensound.com/
+- https://freemusicarchive.org/search?quicksearch=birthday
+
+Choose any upbeat, happy tune! 🎉
+
