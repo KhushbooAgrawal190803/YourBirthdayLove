@@ -44,20 +44,23 @@ function flipSwitch() {
     }, 800);
 }
 
-// Massive confetti blast for entry
+// Massive confetti blast from top/sides
 function launchMassiveConfetti() {
     const colors = ['#ff6b9d', '#ffd93d', '#4ecdc4', '#a8e6cf', '#ff9a76', '#c7b3ff', '#ff1493', '#ffd700'];
     
-    // Create 500 confetti pieces!
-    for (let i = 0; i < 500; i++) {
+    // Create 300 confetti pieces from top!
+    for (let i = 0; i < 300; i++) {
         setTimeout(() => {
             const confetti = document.createElement('div');
             confetti.style.position = 'fixed';
-            confetti.style.width = '15px';
-            confetti.style.height = '15px';
+            confetti.style.width = '12px';
+            confetti.style.height = '12px';
             confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            // Random position across top
             confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.top = '-20px';
+            confetti.style.top = '-30px'; // Start from top
+            
             confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
             confetti.style.animation = `fall ${Math.random() * 2 + 3}s linear forwards`;
             confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
@@ -66,7 +69,7 @@ function launchMassiveConfetti() {
             document.body.appendChild(confetti);
             
             setTimeout(() => confetti.remove(), 5000);
-        }, i * 5);
+        }, i * 8);
     }
 }
 
@@ -114,12 +117,13 @@ function updateCountdown() {
 
     // If birthday has arrived or passed
     if (distance <= 0) {
+        // BIRTHDAY TIME! 🎉
         const countdownSection = document.getElementById('countdown-section');
         countdownSection.classList.remove('active');
         countdownSection.style.display = 'none';
         
-        document.getElementById('birthday-section').classList.add('active');
-        document.body.classList.add('allow-scroll');
+        // Trigger birthday celebration sequence
+        startBirthdayCelebration();
         return;
     }
 
@@ -139,6 +143,341 @@ function updateCountdown() {
 // Start countdown
 setInterval(updateCountdown, 1000);
 updateCountdown();
+
+// ============================================
+// BIRTHDAY CELEBRATION AT MIDNIGHT!
+// ============================================
+
+function startBirthdayCelebration() {
+    // 1. MASSIVE CONFETTI BLAST
+    launchMassiveConfetti();
+    
+    // 2. START HAPPY BIRTHDAY MUSIC (LOOP) - Force play
+    const music = document.getElementById('birthday-music');
+    music.volume = 0.7; // Set volume
+    
+    // Try to play immediately
+    const playPromise = music.play();
+    
+    if (playPromise !== undefined) {
+        playPromise.then(() => {
+            console.log('Music playing!');
+        }).catch(e => {
+            console.log('Autoplay prevented. Waiting for user interaction...');
+            // If autoplay fails, play on any click
+            document.body.addEventListener('click', () => {
+                music.play();
+            }, { once: true });
+        });
+    }
+    
+    // 3. Show cake with candles screen
+    setTimeout(() => {
+        showCakeScreen();
+    }, 3000);
+}
+
+// ============================================
+// CAKE WITH CANDLES SCREEN
+// ============================================
+
+let blownCandles = 0;
+let totalCandles = 7; // 7 candles for age 27
+let audioContext;
+let microphone;
+
+function showCakeScreen() {
+    // Create cake screen
+    const cakeScreen = document.createElement('div');
+    cakeScreen.id = 'blow-cake-screen';
+    cakeScreen.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: #0a0a0a;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 999999;
+    `;
+    
+    cakeScreen.innerHTML = `
+        <h1 style="color: #fff; font-size: 3rem; margin-bottom: 2rem; text-shadow: 0 0 20px rgba(255,107,157,0.8); font-family: 'Comic Sans MS', cursive;">
+            Happy 27th Birthday Adi! 🎂
+        </h1>
+        <p style="color: #fff; font-size: 1.5rem; margin-bottom: 2rem; opacity: 0.8;">
+            Make a wish and blow out the candles! 🕯️✨
+        </p>
+        <div id="interactive-cake" style="background: transparent;"></div>
+        <p id="blow-instruction" style="color: #ffd93d; font-size: 1.2rem; margin-top: 2rem; animation: pulse 2s ease-in-out infinite; transition: all 0.2s ease;">
+            🎤 Blow into your microphone to blow out the candles! 💨
+        </p>
+    `;
+    
+    document.body.appendChild(cakeScreen);
+    
+    // Create cake with candles
+    createInteractiveCake();
+    
+    // Setup microphone
+    setupMicrophone();
+}
+
+function createInteractiveCake() {
+    const cakeContainer = document.getElementById('interactive-cake');
+    
+    let cakeHTML = `
+        <div style="position: relative; width: 400px; height: 350px; display: flex; align-items: center; justify-content: center;">
+            
+            <!-- Simple Cute Cake with integrated candles -->
+            <div style="position: relative; width: 300px; height: 250px;">
+                
+                <!-- Top Layer with Candles -->
+                <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 220px; height: 70px; background: linear-gradient(to bottom, #ffb6c1, #ff69b4); border-radius: 10px 10px 0 0; box-shadow: 0 2px 10px rgba(0,0,0,0.3); border: 3px solid #ff1493;">
+                    <!-- Candles directly on this layer -->
+                    <div style="position: absolute; top: -50px; left: 0; right: 0; display: flex; justify-content: space-evenly; padding: 0 20px;">
+    `;
+    
+    // Create 7 candles
+    for (let i = 0; i < 7; i++) {
+        cakeHTML += `
+            <div class="blow-candle lit" data-candle="${i}" data-blow-count="0" style="position: relative; display: inline-block;">
+                <div class="candle-flame" style="position: absolute; top: -28px; left: 50%; transform: translateX(-50%); width: 20px; height: 28px; background: radial-gradient(ellipse at center, #ffff00 0%, #ff6600 60%, transparent 70%); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; animation: flicker 0.3s infinite alternate; filter: drop-shadow(0 0 10px rgba(255, 200, 0, 0.8));"></div>
+                <div class="candle-stick" style="width: 12px; height: 50px; background: linear-gradient(to right, #ffe4b5, #ffd700); border-radius: 3px; border: 2px solid #ff69b4; box-shadow: inset 0 1px 2px rgba(255,255,255,0.5); display: block;"></div>
+            </div>
+        `;
+    }
+    
+    cakeHTML += `
+                    </div>
+                    <!-- Frosting decorations -->
+                    <div style="position: absolute; bottom: 10px; left: 25px; width: 12px; height: 12px; background: white; border-radius: 50%; box-shadow: 30px 0 0 white, 60px 0 0 white, 90px 0 0 white, 120px 0 0 white, 150px 0 0 white;"></div>
+                </div>
+                
+                <!-- Middle Layer -->
+                <div style="position: absolute; top: 70px; left: 50%; transform: translateX(-50%); width: 240px; height: 70px; background: linear-gradient(to bottom, #ffe4b5, #ffd700); box-shadow: 0 2px 10px rgba(0,0,0,0.2); border-left: 3px solid #ffb700; border-right: 3px solid #ffb700;">
+                    <!-- Colorful sprinkles -->
+                    <div style="position: absolute; top: 20px; left: 30px; width: 8px; height: 8px; background: #ff1493; border-radius: 50%; box-shadow: 30px 5px 0 #4ecdc4, 60px -2px 0 #9370db, 90px 8px 0 #ff6347, 120px 3px 0 #32cd32, 150px 6px 0 #ff69b4;"></div>
+                </div>
+                
+                <!-- Bottom Layer -->
+                <div style="position: absolute; top: 140px; left: 50%; transform: translateX(-50%); width: 260px; height: 70px; background: linear-gradient(to bottom, #b0e0e6, #87ceeb); border-radius: 0 0 10px 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 3px solid #4682b4; border-top: none;">
+                    <!-- Hearts decoration -->
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));">💕</div>
+                </div>
+                
+                <!-- Simple Plate -->
+                <div style="position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); width: 300px; height: 10px; background: #e0e0e0; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 2px solid #c0c0c0;"></div>
+            </div>
+        </div>
+    `;
+    
+    cakeContainer.innerHTML = cakeHTML;
+}
+
+function setupMicrophone() {
+    let lastBlowTime = 0;
+    const blowCooldown = 350; // 350ms between blows
+    
+    // Request microphone access immediately
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Resume audio context if suspended (browser security)
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            
+            microphone = audioContext.createMediaStreamSource(stream);
+            const analyser = audioContext.createAnalyser();
+            analyser.fftSize = 512; // More detailed frequency analysis
+            analyser.smoothingTimeConstant = 0.6; // Better response for blowing
+            microphone.connect(analyser);
+            
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+            let consecutiveHighReadings = 0;
+            
+            // Update instruction to show mic is active
+            document.getElementById('blow-instruction').textContent = '🎤 Microphone active! Blow to put out the candles! 💨';
+            document.getElementById('blow-instruction').style.color = '#4ecdc4';
+            
+            // Check for blowing sound - balanced sensitivity
+            function checkBlowing() {
+                analyser.getByteFrequencyData(dataArray);
+                const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+                
+                // Balanced threshold - not too sensitive, not too hard
+                if (average > 40) { // Good balance for blowing detection
+                    consecutiveHighReadings++;
+                    
+                    // Need 2 consecutive high readings
+                    if (consecutiveHighReadings >= 2) {
+                        const currentTime = Date.now();
+                        
+                        // Only register blow if enough time has passed
+                        if (currentTime - lastBlowTime > blowCooldown) {
+                            registerBlow();
+                            lastBlowTime = currentTime;
+                        }
+                        
+                        consecutiveHighReadings = 0;
+                    }
+                } else {
+                    consecutiveHighReadings = 0;
+                }
+                
+                if (blownCandles < totalCandles) {
+                    requestAnimationFrame(checkBlowing);
+                }
+            }
+            
+            checkBlowing();
+        })
+        .catch(err => {
+            console.error('Microphone access denied:', err);
+            document.getElementById('blow-instruction').innerHTML = '⚠️ Please <strong>allow microphone access</strong> to blow out the candles!<br>Refresh the page and click "Allow" when prompted.';
+            document.getElementById('blow-instruction').style.color = '#ff6b9d';
+            document.getElementById('blow-instruction').style.fontSize = '1.1rem';
+            
+            // Enable click as fallback only if mic fails
+            setTimeout(() => enableClickToBlow(), 100);
+        });
+}
+
+function enableClickToBlow() {
+    // Fallback: click to blow - ONLY enabled if microphone fails
+    const candles = document.querySelectorAll('.blow-candle');
+    console.log(`⚠️ Microphone unavailable. Enabling click fallback for ${candles.length} candles`);
+    
+    candles.forEach((candle, index) => {
+        candle.style.cursor = 'pointer';
+        candle.addEventListener('click', function() {
+            if (this.classList.contains('lit')) {
+                // Click requires 3 clicks too for consistency
+                let currentBlows = parseInt(this.getAttribute('data-blow-count') || 0);
+                currentBlows++;
+                this.setAttribute('data-blow-count', currentBlows);
+                
+                // Shake effect to show blow registered
+                this.style.animation = 'shake 0.2s';
+                setTimeout(() => this.style.animation = '', 200);
+                
+                console.log(`Candle ${index + 1} clicked ${currentBlows}/3 times`);
+                
+                if (currentBlows >= 3) {
+                    console.log(`Candle ${index + 1} extinguished!`);
+                    blowOutCandle(this);
+                }
+            }
+        });
+    });
+}
+
+// Register a single blow - find a lit candle and increment its blow count
+function registerBlow() {
+    const litCandles = document.querySelectorAll('.blow-candle.lit');
+    if (litCandles.length > 0) {
+        // Pick the first lit candle (blow them out in order)
+        const targetCandle = litCandles[0];
+        let currentBlows = parseInt(targetCandle.getAttribute('data-blow-count') || 0);
+        currentBlows++;
+        targetCandle.setAttribute('data-blow-count', currentBlows);
+        
+        console.log(`🌬️ Blow detected! Candle has been blown ${currentBlows}/3 times`);
+        
+        // Visual feedback - shake the candle
+        targetCandle.style.animation = 'shake 0.3s';
+        setTimeout(() => targetCandle.style.animation = '', 300);
+        
+        // Flash the instruction text
+        const instruction = document.getElementById('blow-instruction');
+        if (instruction) {
+            instruction.style.transform = 'scale(1.1)';
+            setTimeout(() => instruction.style.transform = 'scale(1)', 200);
+        }
+        
+        // If this candle has been blown 3 times, extinguish it
+        if (currentBlows >= 3) {
+            console.log(`🎉 Candle extinguished! ${litCandles.length - 1} candles remaining`);
+            blowOutCandle(targetCandle);
+        }
+    }
+}
+
+// Removed blowOutRandomCandle - now using registerBlow with 3-blow requirement
+
+function blowOutCandle(candleElement) {
+    candleElement.classList.remove('lit');
+    const flame = candleElement.querySelector('.candle-flame');
+    if (flame) {
+        flame.style.display = 'none';
+    }
+    
+    blownCandles++;
+    
+    // Update instruction with progress
+    const instruction = document.getElementById('blow-instruction');
+    const remaining = totalCandles - blownCandles;
+    if (remaining > 0) {
+        instruction.textContent = `🎉 Great! ${remaining} candle${remaining > 1 ? 's' : ''} left to blow out! 💨`;
+    }
+    
+    // Check if all candles are blown
+    if (blownCandles >= totalCandles) {
+        setTimeout(() => {
+            allCandlesBlown();
+        }, 500);
+    }
+}
+
+function allCandlesBlown() {
+    // Stop microphone
+    if (microphone) {
+        microphone.disconnect();
+    }
+    if (audioContext) {
+        audioContext.close();
+    }
+    
+    // HUGE CONFETTI BLAST
+    launchMassiveConfetti();
+    
+    // Update instruction
+    document.getElementById('blow-instruction').textContent = '🎉 All candles blown! Happy Birthday! 🎉';
+    document.getElementById('blow-instruction').style.fontSize = '2rem';
+    document.getElementById('blow-instruction').style.color = '#ffd93d';
+    
+    // Remove cake screen and show letter
+    setTimeout(() => {
+        const cakeScreen = document.getElementById('blow-cake-screen');
+        if (cakeScreen) {
+            cakeScreen.remove();
+        }
+        
+        // Make sure countdown is gone
+        const countdownSection = document.getElementById('countdown-section');
+        if (countdownSection) {
+            countdownSection.style.display = 'none';
+            countdownSection.classList.remove('active');
+        }
+        
+        // Show letter and photos
+        const birthdaySection = document.getElementById('birthday-section');
+        birthdaySection.classList.add('active');
+        birthdaySection.style.display = 'block';
+        
+        // Enable scrolling
+        document.body.classList.add('allow-scroll');
+        document.body.style.overflowY = 'auto';
+        
+        // Scroll to top to see letter
+        window.scrollTo(0, 0);
+    }, 3000);
+}
 
 // ============================================
 // SPECIAL PHOTO PRIZES ON COUNTDOWN SCREEN
@@ -563,25 +902,7 @@ function createSimpleSurprise() {
     }, 3000);
 }
 
-// Trigger surprises randomly when in celebration mode
-function startSurprises() {
-    // Big surprise notification every 15-25 seconds
-    setInterval(() => {
-        if (document.querySelector('.celebration-screen').classList.contains('active-screen')) {
-            createSurprise();
-        }
-    }, Math.random() * 10000 + 15000);
-    
-    // Small pop-ups more frequently (every 5-10 seconds)
-    setInterval(() => {
-        if (document.querySelector('.celebration-screen').classList.contains('active-screen')) {
-            createSimpleSurprise();
-        }
-    }, Math.random() * 5000 + 5000);
-}
-
-// Start surprises after a delay
-setTimeout(startSurprises, 3000);
+// Surprises removed per user request
 
 // ============================================
 // SCRATCH-OFF COUNTDOWN EFFECT
