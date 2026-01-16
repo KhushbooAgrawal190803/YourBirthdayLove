@@ -3,7 +3,7 @@
 const birthdayDate = new Date('2026-01-16T00:00:00+05:30').getTime();
 
 // ============================================
-// LIGHT SWITCH ENTRY
+// LIGHT SWITCH ENTRY - SIMPLE FLOW
 // ============================================
 function flipSwitch() {
     const lightSwitch = document.getElementById('lightSwitch');
@@ -12,36 +12,31 @@ function flipSwitch() {
     // Disable further clicks
     lightSwitch.style.pointerEvents = 'none';
     
-    // Check if it's already the birthday
-    const now = new Date().getTime();
-    const isBirthday = now >= birthdayDate;
-    
-    // Wait for switch animation
+    // Wait for switch animation, then go straight to cake
     setTimeout(() => {
-        // REMOVE dark entry screen completely first
+        // Remove dark screen
         const darkScreen = document.getElementById('dark-entry-screen');
         if (darkScreen) {
             darkScreen.remove();
         }
         
-        if (isBirthday) {
-            // IT'S THE BIRTHDAY! Go directly to celebration
-            startBirthdayCelebration();
-        } else {
-            // NOT the birthday yet - show countdown with message
-            // Show HUGE confetti blast
-            launchMassiveConfetti();
-            
-            // Show "It's almost your birthday" message
-            setTimeout(() => {
-                showBirthdayMessage();
-            }, 500);
-            
-            // After message, show countdown
-            setTimeout(() => {
-                document.getElementById('countdown-section').classList.add('active');
-            }, 4500);
+        // Start birthday music
+        const music = document.getElementById('birthday-music');
+        if (music) {
+            music.volume = 0.7;
+            music.play().catch(() => {
+                // If autoplay blocked, play on first interaction
+                document.body.addEventListener('click', () => music.play(), { once: true });
+            });
         }
+        
+        // Show confetti
+        launchMassiveConfetti();
+        
+        // Show cake screen immediately
+        setTimeout(() => {
+            showCakeScreen();
+        }, 500);
     }, 800);
 }
 
@@ -110,88 +105,9 @@ function checkIfBirthday() {
     return distance <= 0;
 }
 
-// Countdown Timer
-function updateCountdown() {
-    // Get current time in IST
-    const now = new Date().getTime();
-    const distance = birthdayDate - now;
+// (Removed - Not needed for simple flow)
 
-    // If birthday has arrived or passed
-    if (distance <= 0) {
-        // BIRTHDAY TIME! 🎉
-        const countdownSection = document.getElementById('countdown-section');
-        countdownSection.classList.remove('active');
-        countdownSection.style.display = 'none';
-        
-        // Trigger birthday celebration sequence
-        startBirthdayCelebration();
-        return;
-    }
-
-    // Calculate time units
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-    // Update display
-    document.getElementById('days').textContent = String(days).padStart(2, '0');
-    document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-    document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-    document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
-}
-
-// Start countdown
-setInterval(updateCountdown, 1000);
-updateCountdown();
-
-// TEST MODE: Skip directly to cake screen for testing
-if (TEST_MODE) {
-    console.log('🧪 TEST MODE ACTIVE - Skipping to cake screen...');
-    setTimeout(() => {
-        // Hide all other sections
-        const darkScreen = document.getElementById('dark-entry-screen');
-        const countdownSection = document.getElementById('countdown-section');
-        if (darkScreen) darkScreen.style.display = 'none';
-        if (countdownSection) countdownSection.style.display = 'none';
-        
-        // Show cake screen directly
-        showCakeScreen();
-    }, 1000); // Small delay to ensure page is loaded
-}
-
-// ============================================
-// BIRTHDAY CELEBRATION AT MIDNIGHT!
-// ============================================
-
-function startBirthdayCelebration() {
-    // 1. MASSIVE CONFETTI BLAST
-    launchMassiveConfetti();
-    
-    // 2. START HAPPY BIRTHDAY MUSIC (LOOP) - Force play
-    const music = document.getElementById('birthday-music');
-    music.volume = 0.7; // Set volume
-    
-    // Try to play immediately
-    const playPromise = music.play();
-    
-    if (playPromise !== undefined) {
-        playPromise.then(() => {
-            console.log('Music playing!');
-        }).catch(e => {
-            console.log('Autoplay prevented. Waiting for user interaction...');
-            // If autoplay fails, play on any click
-            document.body.addEventListener('click', () => {
-                music.play();
-            }, { once: true });
-        });
-    }
-    
-    // 3. Show cake with candles screen
-    setTimeout(() => {
-        showCakeScreen();
-    }, 3000);
-}
+// (Removed - Not needed for simple flow)
 
 // ============================================
 // CAKE WITH CANDLES SCREEN
@@ -207,17 +123,17 @@ function showCakeScreen() {
     const cakeScreen = document.createElement('div');
     cakeScreen.id = 'blow-cake-screen';
     cakeScreen.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: #0a0a0a;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        z-index: 999999;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background: #0a0a0a !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 999999 !important;
     `;
     
     cakeScreen.innerHTML = `
