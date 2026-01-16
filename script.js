@@ -144,6 +144,21 @@ function updateCountdown() {
 setInterval(updateCountdown, 1000);
 updateCountdown();
 
+// TEST MODE: Skip directly to cake screen for testing
+if (TEST_MODE) {
+    console.log('🧪 TEST MODE ACTIVE - Skipping to cake screen...');
+    setTimeout(() => {
+        // Hide all other sections
+        const darkScreen = document.getElementById('dark-entry-screen');
+        const countdownSection = document.getElementById('countdown-section');
+        if (darkScreen) darkScreen.style.display = 'none';
+        if (countdownSection) countdownSection.style.display = 'none';
+        
+        // Show cake screen directly
+        showCakeScreen();
+    }, 1000); // Small delay to ensure page is loaded
+}
+
 // ============================================
 // BIRTHDAY CELEBRATION AT MIDNIGHT!
 // ============================================

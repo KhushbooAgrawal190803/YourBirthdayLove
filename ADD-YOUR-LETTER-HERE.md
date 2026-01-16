@@ -6,7 +6,6 @@ Open `index.html` and find this section (around line 65):
 
 ```html
 <div class="letter-content">
-    <p>Today is your special day, and I want you to know how much you mean to me...</p>
     
     <p><p>Happy 27th Birthday, my love!</p>
     
@@ -16,7 +15,7 @@ Open `index.html` and find this section (around line 65):
     
     <p>I can't wait to create more beautiful memories with you this year and for many years to come. Here's to another amazing year of adventures, laughter, and love!</p>
     
-    <p>I love you more than words can say. Happy Birthday, my love! 🎂💖</p>
+    <p>I love you more than words can say. Happy Birthday, my heart! 🎂💖</p>
     
     <p class="letter-signature">Forever yours,<br>Bubu ❤️</p>
 </p>
@@ -58,4 +57,5 @@ Open `index.html` and find this section (around line 65):
 ---
 
 **Don't forget to save the file after adding your letter!** 💕
+
 
