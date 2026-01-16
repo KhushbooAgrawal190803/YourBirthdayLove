@@ -119,47 +119,81 @@ let audioContext;
 let microphone;
 
 function showCakeScreen() {
-    // Create cake screen
-    const cakeScreen = document.createElement('div');
-    cakeScreen.id = 'blow-cake-screen';
-    cakeScreen.style.cssText = `
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        background: #0a0a0a !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        z-index: 999999 !important;
-    `;
-    
-    cakeScreen.innerHTML = `
-        <h1 style="color: #fff; font-size: 3rem; margin-bottom: 2rem; text-shadow: 0 0 20px rgba(255,107,157,0.8); font-family: 'Comic Sans MS', cursive;">
-            Happy 27th Birthday Adi! 🎂
-        </h1>
-        <p style="color: #fff; font-size: 1.5rem; margin-bottom: 2rem; opacity: 0.8;">
-            Make a wish and blow out the candles! 🕯️✨
-        </p>
-        <div id="interactive-cake" style="background: transparent;"></div>
-        <p id="blow-instruction" style="color: #ffd93d; font-size: 1.2rem; margin-top: 2rem; animation: pulse 2s ease-in-out infinite; transition: all 0.2s ease;">
-            🎤 Blow into your microphone to blow out the candles! 💨
-        </p>
-    `;
-    
-    document.body.appendChild(cakeScreen);
-    
-    // Create cake with candles
-    createInteractiveCake();
-    
-    // Setup microphone
-    setupMicrophone();
+    try {
+        // Remove any existing cake screen first
+        const existingCake = document.getElementById('blow-cake-screen');
+        if (existingCake) {
+            existingCake.remove();
+        }
+        
+        // Create cake screen
+        const cakeScreen = document.createElement('div');
+        cakeScreen.id = 'blow-cake-screen';
+        cakeScreen.style.cssText = `
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background: #0a0a0a !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 999999 !important;
+            pointer-events: auto !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        `;
+        
+        cakeScreen.innerHTML = `
+            <h1 style="color: #fff; font-size: 3rem; margin-bottom: 2rem; text-shadow: 0 0 20px rgba(255,107,157,0.8); font-family: 'Comic Sans MS', cursive;">
+                Happy 27th Birthday Adi! 🎂
+            </h1>
+            <p style="color: #fff; font-size: 1.5rem; margin-bottom: 2rem; opacity: 0.8;">
+                Make a wish and blow out the candles! 🕯️✨
+            </p>
+            <div id="interactive-cake" style="background: transparent;"></div>
+            <p id="blow-instruction" style="color: #ffd93d; font-size: 1.2rem; margin-top: 2rem; animation: pulse 2s ease-in-out infinite; transition: all 0.2s ease;">
+                🎤 Blow into your microphone to blow out the candles! 💨
+            </p>
+        `;
+        
+        document.body.appendChild(cakeScreen);
+        
+        // Make absolutely sure it stays visible
+        setTimeout(() => {
+            const cake = document.getElementById('blow-cake-screen');
+            if (cake) {
+                cake.style.display = 'flex';
+                cake.style.visibility = 'visible';
+                cake.style.opacity = '1';
+            }
+        }, 100);
+        
+        // Create cake with candles
+        setTimeout(() => {
+            createInteractiveCake();
+        }, 150);
+        
+        // Setup microphone
+        setTimeout(() => {
+            setupMicrophone();
+        }, 200);
+        
+    } catch (error) {
+        console.error('Error showing cake screen:', error);
+        alert('Error loading birthday surprise! Please refresh the page.');
+    }
 }
 
 function createInteractiveCake() {
     const cakeContainer = document.getElementById('interactive-cake');
+    
+    if (!cakeContainer) {
+        console.error('❌ Cake container not found!');
+        return;
+    }
     
     let cakeHTML = `
         <div style="position: relative; width: 400px; height: 350px; display: flex; align-items: center; justify-content: center;">
@@ -211,6 +245,12 @@ function createInteractiveCake() {
 }
 
 function setupMicrophone() {
+    const instruction = document.getElementById('blow-instruction');
+    if (!instruction) {
+        console.error('❌ Blow instruction element not found!');
+        return;
+    }
+    
     let lastBlowTime = 0;
     const blowCooldown = 350; // 350ms between blows
     
