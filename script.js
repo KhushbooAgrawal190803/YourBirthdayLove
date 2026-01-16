@@ -12,35 +12,36 @@ function flipSwitch() {
     // Disable further clicks
     lightSwitch.style.pointerEvents = 'none';
     
+    // Check if it's already the birthday
+    const now = new Date().getTime();
+    const isBirthday = now >= birthdayDate;
+    
     // Wait for switch animation
     setTimeout(() => {
-        // Show HUGE confetti blast
-        launchMassiveConfetti();
+        // REMOVE dark entry screen completely first
+        const darkScreen = document.getElementById('dark-entry-screen');
+        if (darkScreen) {
+            darkScreen.remove();
+        }
         
-        // Show "It's almost your birthday" message
-        setTimeout(() => {
-            showBirthdayMessage();
-        }, 500);
-        
-        // After message, show next section
-        setTimeout(() => {
-            // REMOVE dark entry screen completely
-            const darkScreen = document.getElementById('dark-entry-screen');
-            if (darkScreen) {
-                darkScreen.remove();
-            }
+        if (isBirthday) {
+            // IT'S THE BIRTHDAY! Go directly to celebration
+            startBirthdayCelebration();
+        } else {
+            // NOT the birthday yet - show countdown with message
+            // Show HUGE confetti blast
+            launchMassiveConfetti();
             
-            // Don't enable scrolling yet - countdown should be locked
+            // Show "It's almost your birthday" message
+            setTimeout(() => {
+                showBirthdayMessage();
+            }, 500);
             
-            if (checkIfBirthday()) {
-                // It's the birthday! Show the intro with "Let's Celebrate"
-                document.getElementById('birthday-section').classList.add('active');
-            } else {
-                // Before birthday - show countdown
+            // After message, show countdown
+            setTimeout(() => {
                 document.getElementById('countdown-section').classList.add('active');
-            }
-        }, 4500);
-        
+            }, 4500);
+        }
     }, 800);
 }
 
