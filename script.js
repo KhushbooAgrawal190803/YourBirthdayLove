@@ -118,8 +118,13 @@ let totalCandles = 7; // 7 candles for age 27
 let audioContext;
 let microphone;
 
+// Global flag to protect cake screen
+window.CAKE_SCREEN_ACTIVE = false;
+
 function showCakeScreen() {
     try {
+        window.CAKE_SCREEN_ACTIVE = true;
+        
         // Remove any existing cake screen first
         const existingCake = document.getElementById('blow-cake-screen');
         if (existingCake) {
@@ -129,6 +134,7 @@ function showCakeScreen() {
         // Create cake screen
         const cakeScreen = document.createElement('div');
         cakeScreen.id = 'blow-cake-screen';
+        cakeScreen.className = 'cake-screen-active';
         cakeScreen.style.cssText = `
             position: fixed !important;
             top: 0 !important;
@@ -161,10 +167,20 @@ function showCakeScreen() {
         
         document.body.appendChild(cakeScreen);
         
-        // Make absolutely sure it stays visible
-        setTimeout(() => {
+        // Protect the cake screen from being removed
+        const protectCakeScreen = setInterval(() => {
+            if (!window.CAKE_SCREEN_ACTIVE) {
+                clearInterval(protectCakeScreen);
+                return;
+            }
+            
             const cake = document.getElementById('blow-cake-screen');
-            if (cake) {
+            if (!cake) {
+                console.error('❌ CAKE SCREEN WAS REMOVED! Recreating...');
+                // Don't recreate, just log it
+                clearInterval(protectCakeScreen);
+            } else if (cake.style.display !== 'flex') {
+                console.warn('⚠️ Cake display changed, fixing...');
                 cake.style.display = 'flex';
                 cake.style.visibility = 'visible';
                 cake.style.opacity = '1';
@@ -172,14 +188,10 @@ function showCakeScreen() {
         }, 100);
         
         // Create cake with candles
-        setTimeout(() => {
-            createInteractiveCake();
-        }, 150);
+        createInteractiveCake();
         
         // Setup microphone
-        setTimeout(() => {
-            setupMicrophone();
-        }, 200);
+        setupMicrophone();
         
     } catch (error) {
         console.error('Error showing cake screen:', error);
@@ -407,6 +419,9 @@ function blowOutCandle(candleElement) {
 }
 
 function allCandlesBlown() {
+    // Disable cake screen protection
+    window.CAKE_SCREEN_ACTIVE = false;
+    
     // Stop microphone
     if (microphone) {
         microphone.disconnect();
